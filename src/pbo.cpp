@@ -52,13 +52,10 @@ const char *fragment_shader_text =
         "}";
 
 
-const GLsizei width = 1024;
-const GLsizei height = 768;
-
 GLuint create_program(const char *vertexSrc,
                       const char *fragmentSrc);
 
-pbo::pbo(streamer *e) : eng(e) {
+pbo::pbo(streamer *e, int w, int h) : eng(e), width(w), height(h) {
 
     //buffers
     glGenVertexArrays(1, &vao_id);
@@ -184,7 +181,7 @@ void pbo::fill(unsigned char *src) {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo_ids[pbo_i]);
     {
         auto mapped_buffer = (unsigned char *) glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-        std::memcpy(mapped_buffer, src, width * height * 3);
+        memcpy(mapped_buffer, src, width * height * 3);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
     //glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);

@@ -1,7 +1,7 @@
 #include "streamer.h"
 
 int main() {
-    streamer e("/dev/video3", 1024, 768);
-    e.loop();
+    streamer stream("/dev/video3", 1280, 720);
+    stream.loop();
     return 0;
 }

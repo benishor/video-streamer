@@ -54,7 +54,7 @@ streamer::streamer(const std::string& device_path, int w, int h) : stream_width(
     std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
 
-    pbo_ = new pbo(this);
+    pbo_ = new pbo(this, stream_width, stream_height);
     video = new video_source(device_path, stream_width, stream_height);
     audio = new audio_source();
 }

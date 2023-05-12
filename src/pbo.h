@@ -5,7 +5,7 @@ class streamer;
 class pbo {
 
 public:
-	explicit pbo(streamer* e);
+	explicit pbo(streamer* e, int width, int height);
 	~pbo();
 
 	void fill(unsigned char* src);
@@ -26,6 +26,8 @@ private:
 
 	int32_t mvp_loc;
     int32_t tex_loc;
+
+    int width, height;
 
 	uint32_t pbo_ids[2];
 	int pbo_i;

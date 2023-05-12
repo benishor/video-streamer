@@ -7,12 +7,13 @@
 struct video_buffer_info {
     void *start;
     size_t length;
+    uint32_t offset;
 };
 
 class video_source {
 public:
     video_source();
-    video_source(const std::string& src, int w, int h, size_t buffer_count = 5);
+    video_source(const std::string& src, int w, int h, size_t buffer_count = 4);
     ~video_source();
     uint8_t *frame_buffer = nullptr;
 
