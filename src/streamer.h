@@ -3,10 +3,10 @@
 #include <string>
 #include <array>
 #include <SDL2/SDL_video.h>
-#include <SDL2/SDL_opengl.h>
 
 class pbo;
 class video_source;
+class audio_source;
 
 class streamer {
 public:
@@ -29,6 +29,7 @@ private:
 
     pbo *pbo_ = nullptr;
     video_source *video = nullptr;
+    audio_source *audio = nullptr;
     SDL_Window* window = nullptr;
     SDL_GLContext* gl_context = nullptr;
 };

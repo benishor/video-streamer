@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdexcept>
 #include <SDL.h>
 
 #include "glad/glad.h"
@@ -7,6 +6,7 @@
 #include "streamer.h"
 #include "pbo.h"
 #include "video_source.h"
+#include "audio_source.h"
 
 using namespace std;
 
@@ -56,10 +56,12 @@ streamer::streamer(const std::string& device_path, int w, int h) : stream_width(
 
     pbo_ = new pbo(this);
     video = new video_source(device_path, stream_width, stream_height);
+    audio = new audio_source();
 }
 
 
 streamer::~streamer() {
+    delete audio;
     delete video;
     delete pbo_;
     SDL_GL_DeleteContext(gl_context);
