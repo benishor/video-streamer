@@ -1,5 +1,4 @@
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <vector>
 #include <iostream>
 #include <cstring>
@@ -8,14 +7,6 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#ifdef USE_DOUBLE
-typedef double real_t;
-const GLenum GL_REAL_T = GL_DOUBLE;
-#else
-typedef float real_t;
-const GLenum GL_REAL_T = GL_FLOAT;
-#endif
 
 //geometry: textured quad
 const float quad[] = {
@@ -87,7 +78,7 @@ pbo::pbo(streamer *e) : eng(e) {
     glGenBuffers(1, &uv_id);
 
     glBindBuffer(GL_ARRAY_BUFFER, uv_id);
-    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(real_t), &texcoord[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &texcoord[0], GL_STATIC_DRAW);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 

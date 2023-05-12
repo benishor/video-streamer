@@ -1,6 +1,5 @@
 #pragma once
 
-typedef unsigned int GLuint;
 class streamer;
 
 class pbo {
@@ -12,23 +11,23 @@ public:
 	void fill(unsigned char* src);
 	void draw();
 
-	GLuint tex_id;
+	uint tex_id;
 
     void toggle_texture_filtering() const;
 private:
     streamer* eng;
     
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    uint32_t vertex_buffer, vertex_shader, fragment_shader, program;
+    int32_t mvp_location, vpos_location, vcol_location;
     
-    GLuint vbo_id;
-    GLuint vao_id;
-    GLuint uv_id;
+    uint32_t vbo_id;
+    uint32_t vao_id;
+    uint32_t uv_id;
 
-	GLint mvp_loc;
-	GLint tex_loc;
+	int32_t mvp_loc;
+    int32_t tex_loc;
 
-	GLuint pbo_ids[2];
+	uint32_t pbo_ids[2];
 	int pbo_i;
 	uint8_t* buffers_data;
 	uint8_t* buffers[2];
