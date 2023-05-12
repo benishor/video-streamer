@@ -38,17 +38,16 @@ static int render_callback(void *outputBuffer, void *, unsigned int bufferFrames
     return 0;
 }
 
-int get_input_device(RtAudio *audio) {
+int get_input_device(RtAudio *audio, const std::string& device_name) {
     auto devices = audio->getDeviceCount();
 
-    for (size_t i = 0; i < devices; i++) {
+    for (int i = 0; i < devices; i++) {
         try {
             RtAudio::DeviceInfo info = audio->getDeviceInfo(i);
-            auto pos = info.name.find("MS2109");
-
-            if (pos != std::string::npos) {
+            if (info.name == device_name) {
                 return i;
             }
+
         } catch (RtAudioError& e) {
             // ignore?
         }
@@ -59,27 +58,24 @@ int get_input_device(RtAudio *audio) {
 
 
 void enumerate_devices(RtAudio *audio) {
-    std::cout << "Enumerating devices on interface" << std::endl << std::endl;
-    // Determine the number of devices available
     auto device_count = audio->getDeviceCount();
-
-    // Scan through devices for various capabilities
     for (int i = 0; i < device_count; i++) {
         try {
             auto info = audio->getDeviceInfo(i);
 
             if (info.probed) {
-                std::cout << "device = " << info.name << std::endl;
-                std::cout << "; device id = " << i << std::endl;
-                std::cout << ": maximum output channels = " << info.outputChannels << "\n";
-                std::cout << ": maximum input channels = " << info.inputChannels << "\n";
-                std::cout << ": default output = " << info.isDefaultOutput << "\n";
-                std::cout << ": default input = " << info.isDefaultInput << "\n";
-                std::cout << ": samplerates = ";
+                std::cout << info.name << std::endl;
+                std::cout << "\tid = " << i << std::endl;
+                std::cout << "\tmaximum output channels = " << info.outputChannels << "\n";
+                std::cout << "\tmaximum input channels = " << info.inputChannels << "\n";
+                std::cout << "\tdefault output = " << info.isDefaultOutput << "\n";
+                std::cout << "\tdefault input = " << std::boolalpha << info.isDefaultInput << "\n";
+                std::cout << "\tsamplerates = ";
 
                 for (auto s: info.sampleRates)
                     std::cout << s << " ";
 
+                std::cout << std::endl;
                 std::cout << std::endl;
 
             }
@@ -89,7 +85,30 @@ void enumerate_devices(RtAudio *audio) {
     }
 }
 
-audio_source::audio_source() {
+
+void audio_source::enumerate_input_devices() {
+    try {
+        auto audio_in = new RtAudio(RtAudio::LINUX_ALSA);
+        enumerate_devices(audio_in);
+        delete audio_in;
+    } catch (RtAudioError& e) {
+        std::cerr << "Failed to initialize RtAudio. Cause: " << e.what();
+        exit(1);
+    }
+}
+
+void audio_source::enumerate_output_devices() {
+    try {
+        auto audio_out = new RtAudio(RtAudio::LINUX_PULSE);
+        enumerate_devices(audio_out);
+        delete audio_out;
+    } catch (RtAudioError& e) {
+        std::cerr << "Failed to initialize RtAudio. Cause: " << e.what();
+        exit(1);
+    }
+}
+
+audio_source::audio_source(const std::string& audio_device) {
     try {
         audio_in = new RtAudio(RtAudio::LINUX_ALSA);
         audio_out = new RtAudio(RtAudio::LINUX_PULSE);
@@ -98,15 +117,13 @@ audio_source::audio_source() {
         exit(1);
     }
 
-    std::cout << "Good, we're rolling" << std::endl;
-
-    enumerate_devices(audio_in);
+//    enumerate_devices(audio_in);
 //    enumerate_devices(audio_out);
 
     // input stream
     try {
         RtAudio::StreamParameters iParams;
-        iParams.deviceId = get_input_device(audio_in);
+        iParams.deviceId = get_input_device(audio_in, audio_device);
         iParams.nChannels = 2;
         iParams.firstChannel = 0;
         unsigned int sampleRate = 48000;

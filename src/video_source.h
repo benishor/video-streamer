@@ -12,13 +12,15 @@ struct video_buffer_info {
 
 class video_source {
 public:
-    video_source();
     video_source(const std::string& src, int w, int h, size_t buffer_count = 4);
     ~video_source();
+
     uint8_t *frame_buffer = nullptr;
 
+    static void enumerate_video_devices();
+
 private:
-    uint32_t w, h;
+    uint32_t width, height;
     std::thread read_thread;
     volatile bool do_work;
     void read_fun();

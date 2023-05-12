@@ -10,7 +10,7 @@ class audio_source;
 
 class streamer {
 public:
-    streamer(const std::string& device_path, int stream_width, int stream_height);
+    streamer(const std::string& video_device, const std::string& audio_device, int stream_width, int stream_height);
     ~streamer();
 
     void loop();

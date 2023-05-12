@@ -14,8 +14,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Wformat -g")
 #set(CMAKE_BUILD_TYPE "Debug")
 
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
+add_subdirectory(lib/cxxopts)
+add_subdirectory(lib/v4l2-list-devices)
 
-include_directories(src lib/glm/ lib/gl/include)
+include_directories(src lib/glm/ lib/gl/include lib/cxxopts/include lib/v4l2-list-devices/include)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 

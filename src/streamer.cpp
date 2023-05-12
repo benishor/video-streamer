@@ -10,7 +10,7 @@
 
 using namespace std;
 
-streamer::streamer(const std::string& device_path, int w, int h) : stream_width(w), stream_height(h) {
+streamer::streamer(const std::string& device_path, const std::string& audio_device, int w, int h) : stream_width(w), stream_height(h) {
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "Failed to init SDL" << std::endl;
@@ -56,7 +56,7 @@ streamer::streamer(const std::string& device_path, int w, int h) : stream_width(
 
     pbo_ = new pbo(this, stream_width, stream_height);
     video = new video_source(device_path, stream_width, stream_height);
-    audio = new audio_source();
+    audio = new audio_source(audio_device);
 }
 
 

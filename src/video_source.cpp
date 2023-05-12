@@ -70,8 +70,26 @@ static std::string capabilities_to_string(uint32_t caps) {
     return ss.str();
 }
 
-video_source::video_source(const std::string& src, int w_, int h_, size_t buffer_count_)
-        : w(w_), h(h_), n_buffers(buffer_count_) {
+#include "list_devices.hpp"
+
+void video_source::enumerate_video_devices() {
+    std::vector<v4l2::devices::DEVICE_INFO> devices;
+    v4l2::devices::list(devices);
+
+    for (const auto& device: devices) {
+        for (const auto& path: device.device_paths) {
+            std::cout << path << "\n";
+        }
+
+        std::cout << "\t" << device.device_description << std::endl;
+        std::cout << "\t" << device.bus_info << std::endl;
+        std::cout << std::endl;
+    }
+}
+
+
+video_source::video_source(const std::string& src, int w_, int h_, size_t buffer_count)
+        : width(w_), height(h_), n_buffers(buffer_count) {
 
     fd = v4l2_open(src.c_str(), O_RDWR | O_NONBLOCK, 0);
     if (fd < 0) {
@@ -165,24 +183,24 @@ video_source::video_source(const std::string& src, int w_, int h_, size_t buffer
     xioctl(fd, VIDIOC_G_FMT, &video_format);
 
 
-    video_format.fmt.pix.width = w;
-    video_format.fmt.pix.height = h;
+    video_format.fmt.pix.width = width;
+    video_format.fmt.pix.height = height;
     video_format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
     video_format.fmt.pix.field = V4L2_FIELD_ANY;
     xioctl(fd, VIDIOC_TRY_FMT, &video_format);
 
     xioctl(fd, VIDIOC_S_FMT, &video_format);
 
-//    if (video_format.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB24) {
-//        std::cerr << "libv4l didn't accept RGB24 format. Can't proceed." << std::endl;
-//        exit(EXIT_FAILURE);
-//    }
-//
-//    if ((video_format.fmt.pix.width != w) || (video_format.fmt.pix.height != h)) {
-//        std::cout << "Warning: driver is sending image at "
-//                  << video_format.fmt.pix.width << "x" << video_format.fmt.pix.height
-//                  << std::endl;
-//    }
+    if (video_format.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB24) {
+        std::cerr << "libv4l didn't accept RGB24 format. Can't proceed." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if ((video_format.fmt.pix.width != width) || (video_format.fmt.pix.height != height)) {
+        std::cout << "Warning: driver is sending image at "
+                  << video_format.fmt.pix.width << "x" << video_format.fmt.pix.height
+                  << std::endl;
+    }
 
     // ask for buffers
     CLEAR(buffer_request);
@@ -229,7 +247,7 @@ video_source::video_source(const std::string& src, int w_, int h_, size_t buffer
         xioctl(fd, VIDIOC_QBUF, &video_buffer);
     }
 
-    frame_buffer = new uint8_t[w * h * 3];
+    frame_buffer = new uint8_t[width * height * 3];
 
 
     buffer_type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -295,5 +313,6 @@ void video_source::read_fun() {
         }
     }
 }
+
 
 
